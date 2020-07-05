@@ -1,0 +1,11 @@
+body {
+  font-family: sans-serif;
+  background: black;
+  display: flex;
+  justify-content: center;
+}
+#gameScreen {
+  /* border: 10px solid white; */
+  margin-top: 10vh;
+  border: 1px solid pink;
+}
