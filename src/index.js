@@ -1,18 +1,17 @@
+import * as Constants from "./Constants.js";
 import Grid from "./grid.js";
 import Tetromino from "./tetromino.js";
-
-const GRID_SIZE = 32;
-const NUM_COLUMNS = 10;
-const NUM_ROWS = 20;
-const SCREEN_SIZE = {
-  width: NUM_COLUMNS * GRID_SIZE,
-  height: NUM_ROWS * NUM_ROWS,
-};
 
 window.addEventListener("keydown", keyDown, false);
 window.addEventListener("keyup", keyUp, false);
 
-let keyDowns = { left: false, right: false, up: false, down: false };
+let keyDowns = {
+  left: false,
+  right: false,
+  up: false,
+  down: false,
+  space: false,
+};
 let canvas = document.getElementById("gameScreen");
 let ctx = canvas.getContext("2d");
 let lastTime = 0;
@@ -20,16 +19,21 @@ let lastTime = 0;
 let grid = new Grid();
 let tetromino = new Tetromino();
 
-function init() {
-  console.log(`Started Game`);
-}
+function init() {}
 
 function gameLoop(timestamp) {
   let deltaTime = timestamp - lastTime;
   lastTime = timestamp;
+  ctx.clearRect(
+    0,
+    0,
+    Constants.COLUMNS * Constants.GRID_SIZE,
+    Constants.ROWS * Constants.GRID_SIZE
+  );
+  grid.update(deltaTime);
+  tetromino.update(deltaTime);
   grid.draw(ctx);
   tetromino.draw(ctx);
-  //  / ctx.clearRect(0, 0, SCREEN_SIZE.width, SCREEN_SIZE.height);
   requestAnimationFrame(gameLoop);
 }
 
@@ -40,6 +44,7 @@ function keyDown(e) {
       keyDowns.up = true;
       break;
     case 83:
+      tetromino.startSpeedUp();
       keyDowns.down = true;
       break;
     case 65:
@@ -47,6 +52,9 @@ function keyDown(e) {
       break;
     case 68:
       keyDowns.right = true;
+      break;
+    case 32:
+      keyDowns.space = true;
       break;
     default:
       return;
@@ -57,16 +65,24 @@ function keyUp(e) {
   let code = e.keyCode;
   switch (code) {
     case 87:
+      tetromino.rotate();
       keyDowns.up = false;
       break;
     case 83:
+      tetromino.stopSpeedUp();
       keyDowns.down = false;
       break;
     case 65:
+      tetromino.moveLeft();
       keyDowns.left = false;
       break;
     case 68:
+      tetromino.moveRight();
       keyDowns.right = false;
+      break;
+    case 32:
+      tetromino.changeType();
+      keyDowns.space = false;
       break;
     default:
       return;
