@@ -1,223 +1,35 @@
 import * as Constants from "./Constants.js";
+import Grid from "./grid.js";
 const COLOR = "GRAY";
+const SOUND = false;
 const moveSound = new Audio("move.mp3");
 const rotateSound = new Audio("rotate.mp3");
 const stoppedSound = new Audio("stopped.mp3");
 const changedSound = new Audio("change.mp3");
 export default class Tetrominos {
-  constructor() {
+  constructor(grid) {
     // prettier-ignore
-    this.layouts = [
-      [ // LONG
-        [
-          0, 0, 0, 0,
-          1, 1, 1, 1,
-          0, 0, 0, 0, 
-          0, 0, 0, 0,
-        ],
-        [ 
-          0, 0, 1, 0,
-          0, 0, 1, 0,
-          0, 0, 1, 0, 
-          0, 0, 1, 0,
-        ],
-        [
-          0, 0, 0, 0,
-          0, 0, 0, 0,
-          1, 1, 1, 1, 
-          0, 0, 0, 0,
-        ],
-        [
-          0, 1, 0, 0,
-          0, 1, 0, 0,
-          0, 1, 0, 0, 
-          0, 1, 0, 0,
-        ],
-      ],
-      [ // LEFT PIPE
-        [ 
-          1, 0, 0, 0,
-          1, 1, 1, 0,
-          0, 0, 0, 0, 
-          0, 0, 0, 0,
-        ],
-        [ 
-          0, 1, 1, 0,
-          0, 1, 0, 0,
-          0, 1, 0, 0, 
-          0, 0, 0, 0,
-        ],
-        [
-          0, 0, 0, 0,
-          1, 1, 1, 0,
-          0, 0, 1, 0, 
-          0, 0, 0, 0,
-        ],
-        [
-          0, 1, 0, 0,
-          0, 1, 0, 0,
-          1, 1, 0, 0, 
-          0, 0, 0, 0,
-        ],
-      ],
-      [ // RIGHT PIPE
-        [ 
-          0, 0, 0, 1,
-          0, 1, 1, 1,
-          0, 0, 0, 0, 
-          0, 0, 0, 0,
-        ],
-        [ 
-          0, 0, 1, 0,
-          0, 0, 1, 0,
-          0, 0, 1, 1, 
-          0, 0, 0, 0,
-        ],
-        [
-          0, 0, 0, 0,
-          1, 1, 1, 0,
-          1, 0, 0, 0, 
-          0, 0, 0, 0,
-        ],
-        [
-          1, 1, 0, 0,
-          0, 1, 0, 0,
-          0, 1, 0, 0, 
-          0, 0, 0, 0,
-        ],
-      ],
-      [ // CUBE
-        [ 
-          0, 1, 1, 0,
-          0, 1, 1, 0,
-          0, 0, 0, 0, 
-          0, 0, 0, 0,
-        ],
-        [ 
-          0, 1, 1, 0,
-          0, 1, 1, 0,
-          0, 0, 0, 0, 
-          0, 0, 0, 0,
-        ],
-        [
-          0, 1, 1, 0,
-          0, 1, 1, 0,
-          0, 0, 0, 0, 
-          0, 0, 0, 0,
-        ],
-        [
-          0, 1, 1, 0,
-          0, 1, 1, 0,
-          0, 0, 0, 0, 
-          0, 0, 0, 0,
-        ],
-      ],
-      [ // LEFT SNAKE
-        [ 
-          0, 1, 1, 0,
-          1, 1, 0, 0,
-          0, 0, 0, 0, 
-          0, 0, 0, 0,
-        ],
-        [ 
-          0, 1, 0, 0,
-          0, 1, 1, 0,
-          0, 0, 1, 0, 
-          0, 0, 0, 0,
-        ],
-        [
-          0, 0, 0, 0,
-          0, 1, 1, 0,
-          1, 1, 0, 0, 
-          0, 0, 0, 0,
-        ],
-        [
-          1, 0, 0, 0,
-          1, 1, 0, 0,
-          0, 1, 0, 0, 
-          0, 0, 0, 0,
-        ],
-      ],
-      [ // TEE
-        [ 
-          0, 0, 1, 0,
-          0, 1, 1, 1,
-          0, 0, 0, 0, 
-          0, 0, 0, 0,
-        ],
-        [ 
-          0, 0, 1, 0,
-          0, 0, 1, 1,
-          0, 0, 1, 0, 
-          0, 0, 0, 0,
-        ],
-        [
-          0, 0, 0, 0,
-          0, 1, 1, 1,
-          0, 0, 1, 0, 
-          0, 0, 0, 0,
-        ],
-        [
-          0, 0, 1, 0,
-          0, 1, 1, 0,
-          0, 0, 1, 0, 
-          0, 0, 1, 0,
-        ],
-      ],
-      [ // RIGHT SNAKE
-        [ 
-          1, 1, 0, 0,
-          0, 1, 1, 0,
-          0, 0, 0, 0, 
-          0, 0, 0, 0,
-        ],
-        [ 
-          0, 0, 1, 0,
-          0, 1, 1, 0,
-          0, 1, 0, 0, 
-          0, 0, 0, 0,
-        ],
-        [
-          0, 0, 0, 0,
-          1, 1, 0, 0,
-          0, 1, 1, 0, 
-          0, 0, 0, 0,
-        ],
-        [
-          0, 1, 0, 0,
-          1, 1, 0, 0,
-          1, 0, 0, 0, 
-          0, 0, 0, 0,
-        ],
-      ],
-    ]
+    this.layouts = Constants.layouts;
+    this.colors = Constants.colors;
+    this.grid = grid;
     this.rotation = 0;
     this.x =
       (Constants.GRID_SIZE * Constants.COLUMNS) / 2 - 2 * Constants.GRID_SIZE;
     this.y = 0 - Constants.GRID_SIZE - 4 * Constants.GRID_SIZE;
     this.currentTime = 0;
-    this.spedUp;
-    this.stopped;
+    this.spedUp = false;
+    this.stopped = false;
     this.movingLeft = false;
     this.movingRight = false;
-    this.type = 6;
-    this.colors = [
-      "AQUA",
-      "BLUE",
-      "ORANGE",
-      "YELLOW",
-      "LIME",
-      "FUCHSIA",
-      "PURPLE",
-    ];
+    this.type = this.randomNumber(0, 1);
+    //this.type = 0;
   }
-  ww;
 
   draw(ctx) {
     ctx.beginPath();
     ctx.strokeStyle = "RED";
     ctx.lineWidth = "4";
-    //ctx.rect(this.x, this.y, 4 * Constants.GRID_SIZE, 4 * Constants.GRID_SIZE);
+    ctx.rect(this.x, this.y, 4 * Constants.GRID_SIZE, 4 * Constants.GRID_SIZE);
     this.drawLayout(ctx);
     ctx.stroke();
   }
@@ -227,7 +39,7 @@ export default class Tetrominos {
     let column = 0;
     let row = 0;
     this.layouts[this.type][this.rotation].forEach((e) => {
-      if (e === 1) {
+      if (e != "") {
         ctx.rect(
           this.x + Constants.GRID_SIZE * column,
           this.y + Constants.GRID_SIZE * row,
@@ -250,7 +62,7 @@ export default class Tetrominos {
       this.currentTime >= 1 * 1000 ||
       (this.currentTime >= 0.05 * 1000 && this.spedUp)
     ) {
-      moveSound.play();
+      if (SOUND) moveSound.play();
       this.y += Constants.GRID_SIZE;
       this.currentTime = 0;
       this.maybeStop();
@@ -262,14 +74,16 @@ export default class Tetrominos {
       this.y >=
       Constants.GRID_SIZE * Constants.ROWS - 4 * Constants.GRID_SIZE
     ) {
-      stoppedSound.play();
+      if (SOUND) stoppedSound.play();
       this.stopped = true;
+      this.saveToGrid();
+      this.reset();
     }
   }
 
   moveRight() {
     if (this.stopped) return;
-    moveSound.play();
+    if (SOUND) moveSound.play();
     this.x += Constants.GRID_SIZE;
     if (
       this.x >
@@ -282,7 +96,7 @@ export default class Tetrominos {
 
   moveLeft() {
     if (this.stopped) return;
-    moveSound.play();
+    if (SOUND) moveSound.play();
     this.x -= Constants.GRID_SIZE;
     if (this.x < 0) {
       this.x = 0;
@@ -301,14 +115,40 @@ export default class Tetrominos {
 
   rotate() {
     if (this.stopped) return;
-    rotateSound.play();
+    if (SOUND) rotateSound.play();
     this.rotation++;
     if (this.rotation >= 4) this.rotation = 0;
   }
 
   changeType() {
     this.type++;
-    changedSound.play();
+    if (SOUND) changedSound.play();
     if (this.type >= 6) this.type = 0;
+  }
+
+  randomNumber(min, max) {
+    return Math.floor(Math.random() * (max - min + 1) + min);
+  }
+
+  saveToGrid() {
+    this.grid.addTetromino(
+      this.x / Constants.GRID_SIZE,
+      this.y / Constants.GRID_SIZE,
+      this.type,
+      this.rotation
+    );
+  }
+  reset() {
+    setTimeout(() => {
+      this.rotation = 0;
+      this.x =
+        (Constants.GRID_SIZE * Constants.COLUMNS) / 2 - 2 * Constants.GRID_SIZE;
+      this.y = 0 - Constants.GRID_SIZE - 4 * Constants.GRID_SIZE;
+      this.spedUp = false;
+      this.stopped = false;
+      this.movingLeft = false;
+      this.movingRight = false;
+      console.log(this.type);
+    }, 1 * 1000);
   }
 }

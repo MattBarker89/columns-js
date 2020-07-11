@@ -17,7 +17,7 @@ let ctx = canvas.getContext("2d");
 let lastTime = 0;
 
 let grid = new Grid();
-let tetromino = new Tetromino();
+let tetromino = new Tetromino(grid);
 
 function init() {}
 
