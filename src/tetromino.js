@@ -1,7 +1,7 @@
 import * as Constants from "./Constants.js";
 import Grid from "./grid.js";
 const COLOR = "GRAY";
-const SOUND = false;
+const SOUND = true;
 const moveSound = new Audio("move.mp3");
 const rotateSound = new Audio("rotate.mp3");
 const stoppedSound = new Audio("stopped.mp3");
@@ -29,12 +29,19 @@ export default class Tetrominos {
     ctx.beginPath();
     ctx.strokeStyle = "RED";
     ctx.lineWidth = "4";
-    ctx.rect(this.x, this.y, 4 * Constants.GRID_SIZE, 4 * Constants.GRID_SIZE);
+    //ctx.rect(this.x, this.y, 4 * Constants.GRID_SIZE, 4 * Constants.GRID_SIZE);
     this.drawLayout(ctx);
     ctx.stroke();
   }
 
   drawLayout(ctx) {
+    ctx.save();
+    ctx.clip();
+    ctx.lineWidth *= 2;
+    ctx.fill();
+    ctx.stroke();
+    ctx.restore();
+
     ctx.strokeStyle = this.colors[this.type];
     let column = 0;
     let row = 0;
@@ -70,15 +77,21 @@ export default class Tetrominos {
   }
 
   maybeStop() {
-    if (
-      this.y >=
-      Constants.GRID_SIZE * Constants.ROWS - 4 * Constants.GRID_SIZE
-    ) {
+    if (this.nextBlockDownIsSolid()) {
+      console.log("stopping");
       if (SOUND) stoppedSound.play();
       this.stopped = true;
       this.saveToGrid();
       this.reset();
     }
+  }
+
+  getXCoord(x) {
+    return x / Constants.GRID_SIZE;
+  }
+
+  getYCoord(y) {
+    return y / Constants.GRID_SIZE - 1;
   }
 
   moveRight() {
@@ -148,7 +161,38 @@ export default class Tetrominos {
       this.stopped = false;
       this.movingLeft = false;
       this.movingRight = false;
-      console.log(this.type);
-    }, 1 * 1000);
+    }, 1 * 0);
+  }
+
+  nextBlodDownIsBottom() {
+    // let xWholeBlock = this.x / Constants.GRID_SIZE;
+    // let yWholeBlock = this.y / Constants.GRID_SIZE;
+    // console.log(`xPosWholeBlock:${xWholeBlock} yPosWholeBlock: ${yWholeBlock}`);
+    // this.layouts[this.type][this.rotation].forEach((e, i) => {
+    //});
+  }
+
+  nextBlockDownIsSolid() {
+    let isSolid = false;
+    let rowCount = 0;
+    let localX = 0;
+    let localY = 0;
+    for (let i = 0; i < this.layouts[this.type][this.rotation].length; i++) {
+      if (this.layouts[this.type][this.rotation] === 0) continue;
+      let blockToCheck = this.grid.getBlockXY(
+        this.getXCoord(this.x) + localX,
+        this.getYCoord(this.y) + localY - 1
+      );
+      isSolid = typeof blockToCheck !== "undefined" && blockToCheck !== ".";
+      if (isSolid) break;
+      if (rowCount === 3) {
+        localY++;
+        localX = 0;
+        rowCount = 0;
+      }
+      rowCount++;
+      localX++;
+    }
+    return isSolid;
   }
 }

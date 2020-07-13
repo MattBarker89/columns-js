@@ -37,6 +37,7 @@ export default class Grid {
       Constants.ROWS * Constants.GRID_SIZE
     );
     ctx.stroke();
+
     for (
       let column = 0;
       column < Constants.COLUMNS * Constants.GRID_SIZE;
@@ -47,15 +48,27 @@ export default class Grid {
         row < Constants.ROWS * Constants.GRID_SIZE;
         row += Constants.GRID_SIZE
       ) {
-        if (this.currentGrid[row] != 9) {
+        if (
+          this.currentGrid[
+            (row / Constants.GRID_SIZE) * 10 + column / Constants.GRID_SIZE
+          ] != "."
+        ) {
+          ctx.beginPath();
+          ctx.strokeStyle = this.colors[
+            this.currentGrid[
+              (row / Constants.GRID_SIZE) * 10 + column / Constants.GRID_SIZE
+            ]
+          ];
+          ctx.lineWidth = "4s";
+          ctx.rect(column, row, Constants.GRID_SIZE, Constants.GRID_SIZE);
+          ctx.stroke();
         }
       }
     }
   }
 
   addTetromino(x, y, type, rotation) {
-    console.log(x, y, type, rotation);
-    let startingYPos = (y - 1) * 10;
+    let startingYPos = y * 10;
     let startingXPos = x;
     let horizontalCount = 0;
     this.layouts[type][rotation].forEach((e, i) => {
@@ -67,7 +80,6 @@ export default class Grid {
       if (e != 0) this.currentGrid[currentBlockPosition + i] = type;
       horizontalCount++;
     });
-
     this.printCurrentPiece(this.layouts[type][rotation]);
     this.printCurrentGrid();
   }
@@ -100,5 +112,22 @@ export default class Grid {
     if (this.currentTime >= 1000) {
       this.currentTime = 0;
     }
+  }
+
+  getBlockXY(x, y) {
+    let block = y * 10 + x;
+    return this.currentGrid[block];
+    // let startingYPos = y * 10;
+    // let startingXPos = x;
+    // let horizontalCount = 0;
+    //   this.layouts[type][rotation].forEach((e, i) => {
+    //     if (horizontalCount === 4) {
+    //       startingXPos += 6;
+    //       horizontalCount = 0;
+    //     }
+    //     let currentBlockPosition = startingYPos + startingXPos;
+    //   return this.currentGrid[currentBlockPosition + i] = type;
+    //   horizontalCount++;
+    // });
   }
 }
