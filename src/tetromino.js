@@ -1,7 +1,7 @@
 import * as Constants from "./Constants.js";
 import Grid from "./grid.js";
 const COLOR = "GRAY";
-const SOUND = true;
+const SOUND = false;
 const moveSound = new Audio("move.mp3");
 const rotateSound = new Audio("rotate.mp3");
 const stoppedSound = new Audio("stopped.mp3");
